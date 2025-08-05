@@ -12,15 +12,15 @@ export default function Home() {
         </h1>
         <div className="space-y-4 text-lg leading-relaxed">
           <p>
-            I'm a grad student passionate about understanding how systems work under the hood
+            I&apos;m a grad student passionate about understanding how systems work under the hood
             . I work primarily with{" "}
             <code className="bg-code-bg px-2 py-1 rounded text-base">Go</code>,{" "}
             <code className="bg-code-bg px-2 py-1 rounded text-base">Python</code>, and{" "}
             <code className="bg-code-bg px-2 py-1 rounded text-base">C++</code>.
           </p>
           <p>
-            Currently diving deep into distributed systems, networking and OS internals. When I'm 
-            not coding, you'll find me at the gym debugging my bench.
+            Currently diving deep into distributed systems, networking and OS internals. When I&apos;m 
+            not coding, you&apos;ll find me at the gym debugging my bench.
           </p>
         </div>
       </section>

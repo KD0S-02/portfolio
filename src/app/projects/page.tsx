@@ -3,11 +3,11 @@ import { projectIds, projectsData } from '@/data/project';
 import Breadcrumb from '@/ui/Breadcrumbs';
 
 export default function ProjectsPage() {
-  
+
     const breadcrumbs = [
-    { label: '~/home', href: '/' },
-    { label: 'projects' },
-  ];
+        { label: '~/home', href: '/' },
+        { label: 'projects' },
+    ];
 
   return (
     <div className="min-h-screen bg-background text-foreground font-mono">
@@ -17,7 +17,7 @@ export default function ProjectsPage() {
         <div className="mb-12">
           <h1 className="text-4xl font-mono mb-4 text-white">Projects</h1>
           <p className="text-muted-foreground leading-relaxed">
-            A collection of systems and applications I've built, focusing on distributed systems, 
+            A collection of systems and applications I&apos;ve built, focusing on distributed systems, 
             real-time communication, and concurrent programming.
           </p>
         </div>

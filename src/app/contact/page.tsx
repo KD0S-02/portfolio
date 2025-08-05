@@ -16,7 +16,7 @@ export default function ContactPage() {
         <div className="mb-12">
           <h1 className="text-4xl font-mono mb-4 text-white">Contact</h1>
           <p className="text-muted-foreground leading-relaxed">
-            Let's connect! I'm always interested in discussing new opportunities, collaborating on
+            Let&apos;s connect! I&apos;m always interested in discussing new opportunities, collaborating on
             technical challenges, or just chatting about distributed systems and software development.
           </p>
         </div>

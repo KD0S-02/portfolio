@@ -4,18 +4,18 @@ import { projectsData, projectIds } from '@/data/project';
 import Breadcrumb from '@/ui/Breadcrumbs';
 
 interface ProjectDetailPageProps {
-  params: {
+  params: Promise<{
     projectId: string;
-  };
+  }>;
 }
 
-export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
-  const project = projectsData[params.projectId];
-
+export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
+  const { projectId } = await params;
+  const project = projectsData[projectId];
   const breadcrumbs = [
-    { label: '~/home', href: '/' },
-    { label: 'projects', href: '/projects' },
-    { label: params.projectId}
+        { label: '~/home', href: '/' },
+        { label: 'projects', href: '/projects'},
+        { label: projectId }
   ];
 
   if (!project) {
@@ -24,8 +24,8 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-mono">
-      
       <main className="max-w-4xl mx-auto p-8">
+        {/* Breadcrumb */}
         <Breadcrumb items={breadcrumbs}></Breadcrumb>
 
         {/* Project Title */}
@@ -44,20 +44,17 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
         {/* Links */}
         <div className="font-mono text-sm space-x-6 pb-4 border-b border-code-border mb-8">
           {project.links.github && (
-            <a href={project.links.github} className="text-accent hover:text-accent-hover 
-            underline transition-colors" target="_blank" rel="noopener noreferrer">
+            <a href={project.links.github} className="text-accent hover:text-accent-hover underline transition-colors" target="_blank" rel="noopener noreferrer">
               [github]
             </a>
           )}
           {project.links.demo && (
-            <a href={project.links.demo} className="text-accent hover:text-accent-hover 
-            underline transition-colors" target="_blank" rel="noopener noreferrer">
+            <a href={project.links.demo} className="text-accent hover:text-accent-hover underline transition-colors" target="_blank" rel="noopener noreferrer">
               [demo]
             </a>
           )}
           {project.links.docs && (
-            <a href={project.links.docs} className="text-accent hover:text-accent-hover 
-            underline transition-colors" target="_blank" rel="noopener noreferrer">
+            <a href={project.links.docs} className="text-accent hover:text-accent-hover underline transition-colors" target="_blank" rel="noopener noreferrer">
               [docs]
             </a>
           )}
@@ -155,16 +152,20 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
 
         {/* Navigation */}
         <div className="pt-8 border-t border-code-border flex justify-between items-center">
-          <Link href="/projects" className="text-accent hover:text-accent-hover font-mono 
-          text-sm transition-colors">
+          <Link href="/projects" className="text-accent hover:text-accent-hover font-mono text-sm transition-colors">
             ← back to projects
           </Link>
-          <Link href="/contact" className="text-accent hover:text-accent-hover font-mono 
-          text-sm transition-colors">
+          <Link href="/contact" className="text-accent hover:text-accent-hover font-mono text-sm transition-colors">
             get in touch →
           </Link>
         </div>
       </main>
     </div>
   );
+}
+
+export async function generateStaticParams() {
+  return projectIds.map((projectId) => ({
+    projectId,
+  }));
 }
