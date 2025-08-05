@@ -89,7 +89,8 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
             <h2 className="text-xl font-mono mb-4 text-accent">Architecture</h2>
             <div className="bg-code-bg border border-code-border rounded p-6 mb-4">
               <img 
-                src={project.architecture.img} 
+                src={process.env.NODE_ENV === "production" ? `/portfolio/${project.architecture.img}` : 
+                  project.architecture.img} 
                 alt={`${project.title} architecture diagram`}
                 className="w-full max-w-2xl mx-auto rounded"
               />

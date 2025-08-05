@@ -57,7 +57,7 @@ export const kdtransfer: ProjectContent = {
    ]
  },
  architecture: {
-   img: "/images/projects/kdtransfer_architecture.png",
+   img: "/images/kdtransfer_architecture.png",
    components: [
      {
        name: "CLI Client",
@@ -141,7 +141,7 @@ export const kdchat: ProjectContent = {
     ]
   },
   architecture: {
-    img: "/images/projects/kdchat_architecture.png",
+    img: "/images/kdchat_architecture.png",
     components: [
       {
         name: "KDChat Frontend",
