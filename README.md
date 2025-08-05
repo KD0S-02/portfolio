@@ -1,3 +1,3 @@
-# Portfolio
+# KDOS - Portfolio
 
-pretty cool porfolio (NextJS, Mantine(UI))
+pretty cool portfolio built using nextjs and typescript
