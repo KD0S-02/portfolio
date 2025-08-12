@@ -1,0 +1,223 @@
+---
+title: "Building a P2P File Transfer Tool from Scratch - Part 1: The Easy Local Part"
+date: "2025-08-11"
+excerpt: "Summer break networking adventures with TCP, binary protocols, and the harsh reality of NAT traversal"
+tags: ["go", "networking", "tcp", "p2p", "binary-protocol", "learning"]
+series: "kdtransfer"
+part: 1
+author: "Krishnadas Nair"
+readTime: "8 min read"
+---
+
+# Building a P2P File Transfer Tool from Scratch - Part 1: The "Easy" Local Part
+
+## Prologue
+
+Summer break. Just finished Professor Alden Jackson's networking course at Northeastern. He was incredibly passionate about networking, and that energy was contagious. 
+
+That dangerous combination of free time and partially digested knowledge about TCP/UDP, OSI model layers, sockets, and NATs got me thinking: *"Ayo, let's cook some stuff up."*
+
+I'd just spent a semester learning about network protocols, packet switching, and the OSI model. Cool stuff, but all theoretical. Time to get my hands dirty with some actual socket programming.
+
+The idea was simple: build a file transfer tool, starting from raw TCP sockets and custom protocols. Perfect summer project to sharpen those skills before they got rusty.
+
+I figured TCP would be perfect for local transfers. Fast, reliable, and I could focus on the protocol design without worrying about packet loss.
+
+## The Plan (Optimistically Simple)
+
+Start with the basics:
+1. TCP connection between two machines
+2. Send a file, receive a file
+3. Make it fast and reliable locally first
+4. Then tackle the internet (spoiler: this is where reality hit)
+
+## Binary Protocols: Because I Just Learned About Them
+
+Fresh out of Professor Jackson's networking course, I was excited to put theory into practice. HTTP and JSON would work, sure, but where's the learning in that? I wanted to design my own protocol from scratch.
+
+Plus, after studying how TCP, IP, and Ethernet headers work, I was convinced that binary protocols were just... cooler. More efficient, more "real systems programming."
+
+The design was dead simple:
+
+```
+[1 byte: opcode][4 bytes: payload length][payload...]
+```
+
+Five bytes of overhead per message. Compare that to HTTP headers ("GET /api/upload HTTP/1.1\r\nContent-Type: application/json\r\n...") and you can see why I was excited about this approach.
+
+But the real reason I went binary? **Eliminating partial reads.** 
+
+With TCP streams, you never know if `conn.Read()` will give you a complete message or just part of it. The 4-byte length field solves this elegantly. I know exactly how many bytes to expect for each message. No more complex buffering logic to handle incomplete data.
+
+For the local file transfer, I only needed three simple opcodes:
+
+```go
+FILE_TRANSFER_START = 0x07  // "Hey, incoming file with this info"
+FILE_TRANSFER_DATA  = 0x08  // "Here's a chunk of that file"  
+FILE_TRANSFER_END   = 0x09  // "File complete, we're done"
+```
+
+But being the optimistic engineer I am, I designed the protocol with room to grow. The full protocol spec ended up looking like this:
+
+```go
+const (
+    SERVER_HELLO         byte = 0x01
+    SERVER_ACK          byte = 0x02
+    PEER_INFO_LOOKUP    byte = 0x03
+    PEER_LOOKUP_ACK     byte = 0x04
+    BYE                 byte = 0x05
+    ERROR               byte = 0x06
+    FILE_TRANSFER_START byte = 0x07
+    FILE_TRANSFER_DATA  byte = 0x08
+    FILE_TRANSFER_END   byte = 0x09
+    PEER_INFO_FORWARD   byte = 0x0A
+)
+```
+
+Those extra opcodes? That's where the adventure gets interesting. The peer discovery ops (0x03-0x04) and WebRTC signaling (0x0A) came later when I realized local transfers were just the beginning. But we're getting ahead of ourselves. That's Parts 2 and 3 material.
+
+## Chunking: Because RAM is Not Infinite
+
+Here's where I learned my first lesson about resource management. My initial approach was beautifully naive:
+
+```go
+// DON'T DO THIS
+data, err := os.ReadFile(filename) // Load entire 5GB file into memory
+// Send data in one huge message
+```
+
+This works great until you try to transfer anything larger than your available RAM. My laptop was not amused when I tried to load a 4GB video file.
+
+The solution? Chunking. Break files into bite-sized pieces:
+
+```go
+chunkSize := 512 * 1024 // 512KB chunks
+for i := 0; i < len(data); i += chunkSize {
+    end := i + chunkSize
+    if end > len(data) {
+        end = len(data)
+    }
+    chunk := data[i:end]
+    // Send this chunk
+}
+```
+
+Why 512KB? After testing different sizes, it gave the best balance between network efficiency (fewer round trips) and memory usage. Smaller chunks meant more protocol overhead, larger chunks didn't improve performance much.
+
+## TCP: Just a Chill, Reliable Guy
+
+For the transport layer, TCP was the obvious choice for local transfers. It gives you:
+- **Reliability**: Packets arrive or you know they didn't
+- **Ordering**: Chunks arrive in the right sequence  
+- **Flow control**: TCP won't overwhelm the receiver
+- **Simplicity**: Just read and write bytes
+
+Here's the beautiful thing about TCP for this use case. You don't need to implement acknowledgments or retransmission. TCP handles all that complexity for you. Your application code stays clean:
+
+```go
+// Sender side
+for _, chunk := range chunks {
+    message := createMessage(FILE_CHUNK, chunk)
+    conn.Write(message) // TCP handles the rest
+}
+
+// Receiver side  
+for {
+    opcode, payload := readMessage(conn)
+    if opcode == FILE_CHUNK {
+        file.Write(payload) // Stream directly to disk
+    }
+}
+```
+
+## The Magic of Local Networks
+
+On your local network, this setup works well, though not quite at the theoretical limits:
+
+- **Gigabit ethernet**: ~100-120 MB/s theoretical
+- **WiFi 6**: 80-90 MB/s theoretical  
+- **My implementation**: ~17 MB/s sustained
+
+Still much faster than uploading to cloud storage and downloading again! That 105MB file transfers in about 6 seconds versus several minutes through the cloud.
+
+## Error Handling: Because Murphy's Law is Universal
+
+Even in the "easy" local case, things can go wrong:
+- Files might not exist
+- Disk might be full  
+- Network connections drop
+- Permission issues
+
+The key is failing gracefully:
+
+```go
+file, err := os.Create(filename)
+if err != nil {
+    return fmt.Errorf("failed to create file: %w", err)
+}
+defer file.Close() // Always clean up
+
+_, err = file.Write(chunkData)
+if err != nil {
+    return fmt.Errorf("failed to write chunk: %w", err)
+}
+```
+
+Go's explicit error handling might be verbose, but it forces you to think about what can go wrong. And trust me, everything that can go wrong, will.
+
+## The Moment of Truth
+
+After a day of coding, the moment arrived. I fired up the receiver on my desktop:
+
+```bash
+$ ./transfer recv
+Listening on port 8080...
+Discovering network interfaces...
+Found interfaces: [192.168.1.100:8080, 10.0.0.5:8080, 127.0.0.1:8080]
+Current session ID: XK7M2P9Q
+```
+
+The system automatically discovered all my network interfaces. WiFi, ethernet, loopback. And registered them with the signaling server. The 8-character session code is what I'd share with the sender.
+
+Then on my laptop:
+
+```bash
+$ ./transfer send --peer XK7M2P9Q --file cool_video.mp4
+Connecting to peer...
+Attempting connections to: [192.168.1.100:8080, 10.0.0.5:8080]
+TCP connection established to 192.168.1.100:8080
+Sending file: cool_video.mp4 (105 MB, 212 chunks)
+Transfer complete in 6.3 seconds (~17 MB/s)
+```
+
+The sender used the session code to fetch the receiver's network addresses from the signaling server, then attempted direct TCP connections to each one. The WiFi interface won the race.
+
+*It worked.* That feeling when your code does exactly what you hoped it would do. Pure magic.
+
+## The Reality Check
+
+Drunk on success, I decided to test it with my friend at college. He's on the campus WiFi, I'm on my home network. I sent him the code, we both fired it up, and...
+
+Nothing. Connection refused. Timeouts.
+
+I even tried manually connecting to his public IP address with a simple TCP test. Still failed. That's when reality hit. Most networks block incoming connections, and NAT routers don't know how to forward random TCP connections to the right device behind them.
+
+This is where I learned the painful difference between LAN and WAN networking. My beautiful TCP solution that worked flawlessly in my house suddenly felt like a toy when faced with the real internet.
+
+The harsh reality: NAT, firewalls, and the general hostility of the internet toward direct connections. "P2P" and "across the internet" are two very different problems.
+
+## What's Next?
+
+So that's where Part 1 ends. With a working local file transfer tool that automatically discovers network interfaces and uses session-based peer discovery. The system works great on local networks, but there's still more to build.
+
+**Coming in Part 2:** Adding end-to-end encryption with out-of-band passphrases, so the signaling server never sees your actual data. Just encrypted address info and session codes.
+
+**Part 3 will tackle the real challenge:** WebRTC integration with Pion library, STUN servers for public IP discovery, and connection racing between TCP (LAN) and WebRTC data channels (WAN). Because that beautiful TCP solution completely fails across the internet.
+
+The complete code for the local version is [on my GitHub](https://github.com/KD0S-02/KDTransfer). The session-based discovery and automatic network interface detection already make it pretty useful for LAN transfers.
+
+---
+
+*This is Part 1 of my series on building a P2P file transfer tool. I'm documenting my learning journey as a first-year CS grad student at Northeastern. These are just my insights and experiments, I'm definitely not an expert! Follow along for the encryption deep dive, WebRTC adventures, and probably some spectacular failures along the way.*
+
+**Next up: Part 2 - Adding End-to-End Encryption (And Why Passphrases Matter)**

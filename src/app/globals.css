@@ -3,14 +3,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #111111;      
-  --foreground: #f0f0f0;    
+  --background: #0a0c10;      /* Almost black with cool blue hint */
+  --foreground: #e6e8eb;      /* Clean light grey */
   --accent: #00ff88;          
   --accent-hover: #00cc6a;    
-  --code-bg: #1e1e1e;         
-  --code-border: #333333;     
-  --muted: #888888;           
-  --muted-foreground: #b5b5b5;
+  --code-bg: #111317;         /* Slightly lighter near-black */
+  --code-border: #2a2d33;     /* Dark grey with blue hint */
+  --muted: #6b7280;           /* Cool grey */
+  --muted-foreground: #9ca3af; /* Readable grey */
   --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 }
 

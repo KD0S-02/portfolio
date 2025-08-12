@@ -1,8 +1,13 @@
 import { featuredIds, projectsData } from "@/data/project";
-import BlogPostItem from "@/ui/BlogPostItem";
+import { getLatestBlogPosts } from "@/lib/blog";
+import BlogCard from "@/ui/BlogCard";
+
 import ProjectCard from "@/ui/ProjectCard";
 
-export default function Home() {
+export default async function Home() {
+
+  const latestBlogs = await getLatestBlogPosts(4)
+
   return (
     <div className="space-y-12">
       
@@ -38,9 +43,12 @@ export default function Home() {
 
       <section>
         <h2 className="text-2xl font-mono mb-6 pb-2 border-b border-code-border">
-           Latest Posts
+           Latest Blogs
         </h2>
-        <div className="space-y-6">
+        <div className="grid md:grid-cols-2 gap-6">
+          {
+            latestBlogs.map(post => <BlogCard post={post} key={post.slug}/>)
+          }
         </div>
       </section>
     </div>

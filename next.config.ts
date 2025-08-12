@@ -1,11 +1,10 @@
+import createMDX from '@next/mdx'
 import type { NextConfig } from "next";
 
 const isProd = process.env.NODE_ENV === 'production';
 const isGitHubPages = process.env.GITHUB_ACTIONS;
 
 const nextConfig: NextConfig = {
-  pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
-  
   output: 'export',
   trailingSlash: true,
   distDir: 'out',
@@ -25,9 +24,14 @@ const nextConfig: NextConfig = {
   
   env: {
     SITE_URL: isGitHubPages 
-      ? 'https://KD0S-02.github.io/portfolio' 
-      : 'http://localhost:3000',
+    ? 'https://KD0S-02.github.io/portfolio' 
+    : 'http://localhost:3000',
   },
+  
+  pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
 };
 
-export default nextConfig;
+const withMDX = createMDX({
+})
+
+export default withMDX(nextConfig);
