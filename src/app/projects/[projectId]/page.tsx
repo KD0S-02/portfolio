@@ -29,7 +29,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         <Breadcrumb items={breadcrumbs}></Breadcrumb>
 
         {/* Project Title */}
-        <h1 className="text-3xl font-mono mb-2 text-white">
+        <h1 className="text-3xl font-mono mb-2 text-foreground">
           {project.title}
         </h1>
         <p className="text-muted-foreground mb-6">{project.subtitle}</p>
@@ -131,7 +131,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           <div className="space-y-6">
             {project.challenges.map((challenge, index) => (
               <div key={index} className="border-l-2 border-accent pl-4">
-                <h3 className="text-white font-mono mb-2">{challenge.title}</h3>
+                <h3 className="text-foreground font-mono mb-2">{challenge.title}</h3>
                 <p className="text-foreground text-sm">{challenge.description}</p>
               </div>
             ))}

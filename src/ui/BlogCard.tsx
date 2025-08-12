@@ -9,7 +9,7 @@ export default function BlogCard({
     return (
         <Link key={post.slug} href={`/blogs/${post.slug}`}>
             <div className="project-card cursor-pointer">
-                <h3 className="text-xl font-mono mb-2 text-white">{post.frontmatter.title}</h3>
+                <h3 className="text-xl font-mono mb-2 text-foreground">{post.frontmatter.title}</h3>
                 <p className="text-muted-foreground mb-4 text-sm">{post.frontmatter.excerpt}</p>
                 
                 <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground">

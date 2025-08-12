@@ -118,7 +118,7 @@
   }
 
   .nav-link:hover {
-    color: white;
+    color: var(--muted-foreground);
   }
 
   .nav-link::before {
@@ -167,6 +167,10 @@
     border-radius: 0.25rem;
     font-size: 0.875rem;
     font-family: 'JetBrains Mono', monospace;
+  }
+  
+  h1 {
+    color: var(--accent)
   }
 
   /* Headings with hash symbols */

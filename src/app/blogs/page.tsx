@@ -16,7 +16,7 @@ export default async function BlogsPage() {
         <Breadcrumb items={breadcrumbs} />
         
         <div className="mb-12">
-          <h1 className="text-4xl font-mono mb-4 text-white">Blogs</h1>
+          <h1 className="text-4xl font-mono mb-4">Blogs</h1>
           <p className="text-muted-foreground leading-relaxed">
             Some of my learnings and ideas, from implementing and working with projects on systems, 
             and low-level programming stuff.

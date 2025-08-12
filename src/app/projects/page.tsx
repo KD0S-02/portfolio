@@ -15,7 +15,7 @@ export default function ProjectsPage() {
         <Breadcrumb items={breadcrumbs}></Breadcrumb>
         {/* Header */}
         <div className="mb-12">
-          <h1 className="text-4xl font-mono mb-4 text-white">Projects</h1>
+          <h1 className="text-4xl font-mono mb-4">Projects</h1>
           <p className="text-muted-foreground leading-relaxed">
             A collection of systems and applications I&apos;ve built, focusing on distributed systems, 
             real-time communication, and concurrent programming.
@@ -31,7 +31,7 @@ export default function ProjectsPage() {
             {projectIds.map((id) => (
               <Link key={projectsData[id].id} href={`/projects/${projectsData[id].id}`}>
                 <div className="project-card cursor-pointer">
-                  <h3 className="text-xl font-mono mb-2 text-white">{projectsData[id].title}</h3>
+                  <h3 className="text-xl font-mono mb-2 text-foreground">{projectsData[id].title}</h3>
                   <p className="text-muted-foreground mb-4 text-sm">{projectsData[id].subtitle}</p>
                   <div className="flex flex-wrap gap-2 mb-4">
                     {projectsData[id].tags.slice(0, 4).map((tag: string) => (
