@@ -1,4 +1,5 @@
 import createMDX from '@next/mdx'
+import rehypeHighlight from 'rehype-highlight';
 import type { NextConfig } from "next";
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -32,6 +33,9 @@ const nextConfig: NextConfig = {
 };
 
 const withMDX = createMDX({
+    options: {
+    rehypePlugins: [rehypeHighlight],
+  },
 })
 
 export default withMDX(nextConfig);

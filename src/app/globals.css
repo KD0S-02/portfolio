@@ -1,16 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-
 @import "tailwindcss";
 
 :root {
-  --background: #0a0c10;      /* Almost black with cool blue hint */
-  --foreground: #e6e8eb;      /* Clean light grey */
+  --background: #0a0c10;      
+  --foreground: #e6e8eb;      
   --accent: #00ff88;          
   --accent-hover: #00cc6a;    
-  --code-bg: #111317;         /* Slightly lighter near-black */
-  --code-border: #2a2d33;     /* Dark grey with blue hint */
-  --muted: #6b7280;           /* Cool grey */
-  --muted-foreground: #9ca3af; /* Readable grey */
+  --code-bg: #111317;         
+  --code-border: #2a2d33;     
+  --muted: #6b7280;           
+  --muted-foreground: #9ca3af; 
   --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 }
 
@@ -80,12 +79,10 @@
 
 @layer components {
 
-  /* Terminal prompt styling */
   .terminal-prompt {
     color: var(--accent);
   }
 
-  /* Code block styling */
   .code-block {
     background: var(--code-bg);
     border: 1px solid var(--code-border);
@@ -110,7 +107,6 @@
     color: var(--accent)
   }
 
-  /* Navigation link with hover effect */
   .nav-link {
     position: relative;
     transition: color 200ms;
@@ -134,7 +130,6 @@
     opacity: 1;
   }
 
-  /* Project card hover effect */
   .project-card {
     background: var(--code-bg);
     border: 1px solid var(--code-border);
@@ -148,7 +143,6 @@
     transform: translateY(-2px);
   }
 
-  /* Tag styling */
   .tag {
     background: var(--code-bg);
     border: 1px solid var(--code-border);
@@ -160,7 +154,10 @@
     font-family: 'JetBrains Mono', monospace;
   }
 
-  /* Inline code */
+  strong {
+    color: var(--accent-hover)
+  }
+
   code {
     background: var(--code-bg);
     padding: 0.125rem 0.5rem;
@@ -173,7 +170,10 @@
     color: var(--accent)
   }
 
-  /* Headings with hash symbols */
+  h2 {
+    color: var(--muted-foreground)
+  }
+
   h2::before {
     content: "## ";
     color: var(--accent);

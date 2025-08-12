@@ -6,6 +6,8 @@ import matter from 'gray-matter'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import Breadcrumb from '@/ui/Breadcrumbs'
 import { mdxComponents } from '@/mdx-components'
+import 'highlight.js/styles/atom-one-dark.css';
+import rehypeHighlight from 'rehype-highlight'
 
 interface BlogFrontmatter {
   title: string
@@ -16,6 +18,13 @@ interface BlogFrontmatter {
   readTime?: string
   series?: string
   part?: number
+}
+
+const options = {
+    mdxOptions: {
+        remarkPlugins: [],
+        rehypePlugins: [rehypeHighlight],
+    }
 }
 
 export default async function Page({
@@ -45,7 +54,7 @@ export default async function Page({
       <div className="min-h-screen bg-background text-foreground font-mono">
         <main className="max-w-6xl mx-auto p-8">
           <Breadcrumb items={breadcrumbs} />
-            <MDXRemote source={content} components={mdxComponents}/>
+            <MDXRemote source={content} components={mdxComponents} options={options}/>
         </main>
       </div>
     )
